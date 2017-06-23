@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "mocha test/test.js"
   },
   "author": "sfranke",
   "license": "MIT",
   "devDependencies": {
-    "irc": "^0.5.2"
+  },
+  "dependencies": {
+    "twitch-stream": "^0.3.1"
   }
 }
