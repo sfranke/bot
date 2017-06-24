@@ -11,38 +11,58 @@ twitchStream.connect({
   // Any data sent on the any of the channels
   data: function(msg)
   {
-      logger.log('debug', msg)
-
-      // Display all info available for a message, if there's a user attribute.
-      if (msg.user != undefined) {
-        logger.log('info', msg.user + ' said: ' + '\'' + msg.message + '\'' + ' in channel #' + msg.channel)
-      }
-      // Any message that start with an '!' (exclamation point)
-      if (msg.message != undefined &&  msg.message.charAt(0) == '!') {
-        logger.log('debug', 'Recognized a chat command!')
-        // Start to break down the command..
-        let command = msg.message.split('!')
-        logger.log('debug', util.inspect(command))
-        logger.log('debug', 'Test command: ' + command[1])
-        if (command[1] == 'help' && msg.user == 'webeplaying') {
-          logger.log('debug', 'This is where the help command can be handled.')
-        }
-
-      }
-      // Any message that matches the given regex. Any message that contains a 'http(s):'.
-      if (msg.message != undefined && msg.message.match(/^https?:/g)) {
-        logger.log('debug', 'Found link!')
-      }
+      logger.log('debug', 'data(msg)' + util.inspect(msg))
   },
   // Error handler.
   error: function(err)
   {
-    logger.log('debug',err)
+    logger.log('debug', 'error()' + util.inspect(err))
   },
   // This one gets fired after the connection is established.
   done: function(client)
   {
+    logger.log('debug', 'done()' + util.inspect(client))
+
+    // Join any channel.
     client.join(config.channel[0])
-    // client.send('#webeplaying', 'Test message at startup..')
+
+    // Data event for incoming messages.
+    client.on('data', function(res) {
+      logger.log('debug', 'client.on(\'data\') response: ' + util.inspect(res))
+
+      // Here we can get access to all the information that get sent our way.
+      let command = res.trailing.split('!')
+      let user = res.string.split('!')
+      let channel = res.string.split('@')
+
+
+      // See if there is a '!' (exclamation mark) at the beginning.
+      if (res.trailing != undefined && res.trailing.charAt(0) == '!') {
+        logger.log('debug', 'Recognized a chat command!')
+        // Output all strings here once for debug.
+        logger.log('debug', 'Test command: ' + command[1])
+        logger.log('debug', 'Filter channel name: ' + channel[1].match(/^(.*?)\..*/g))
+
+        let channelName = channel[1].split('.')
+        logger.log('debug', 'channelName: ' + channelName[0])
+
+        if (command[1] == 'help' && user[0] == ':webeplaying') {
+          logger.log('debug', 'This is where the help command should be handled.')
+          client.send('#' + channelName[0], '~~~ Gotcha !help command ~~~')
+        }
+
+      }
+
+      // See if we can find a http link in the message sent.
+      if (res.trailing != undefined && res.trailing.match(/^https?:/g) && user[0] == ':webeplaying') {
+        logger.log('debug', 'client.on(\'data\') -> Found link!')
+      }
+    })
+
+    // Error event so we don't crash.
+    client.on('error', function(res) {
+      logger.log('debug', 'client.on(\'error\')' + util.inspect(res))
+    })
+
   }
 })
