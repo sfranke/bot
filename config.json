@@ -1,9 +1,13 @@
 {
-  "debuglevel": "debug",
+  "debuglevel": "info",
   "user": "mylitttleircbot",
   "oauth": "oauth:989cden4lzyhte5lmulg8uwiu822hb",
   "channel":
   [
-      "#webeplaying"
+      "#webeplaying",
+      "#therealhellcat",
+      "#designker",
+      "#metacoin",
+      "#prefixaut"
   ]
 }
