@@ -43,14 +43,15 @@ twitchStream.connect({
         logger.log('debug', 'Test command: ' + command[1])
         logger.log('debug', 'Filter channel name: ' + channel[1].match(/^(.*?)\..*/g))
 
+        // Isolate the channel name.
         let channelName = channel[1].split('.')
         logger.log('debug', 'channelName: ' + channelName[0])
 
+        // Checking for specific command string, here: 'help'.
         if (command[1] == 'help' && user[0] == ':webeplaying') {
           logger.log('debug', 'This is where the help command should be handled.')
           client.send('#' + channelName[0], '~~~ Gotcha !help command ~~~')
         }
-
       }
 
       // See if we can find a http link in the message sent.
@@ -63,6 +64,5 @@ twitchStream.connect({
     client.on('error', function(res) {
       logger.log('debug', 'client.on(\'error\')' + util.inspect(res))
     })
-
   }
 })
